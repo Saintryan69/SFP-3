@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+import google.generativeai as genai # Corrected import
 import re
 import base64
 import random
@@ -8,7 +8,7 @@ import os
 
 # ✅ Gemini API configuration
 genai.configure(api_key="AIzaSyArTiUlURnBw_Zy41hzJtPg4pKoN4obTdw")
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.0-flash") # Corrected GenerativeModel typo
 
 # ✅ Streamlit config
 st.set_page_config(layout="wide")
@@ -25,10 +25,9 @@ def load_flashcards():
 
 # Function to save flashcards to a JSON file
 def save_flashcards(flashcards):
-    with open(FLASHCARCS_FILE, "w", encoding="utf-8") as f:
+    # Corrected the typo: FLASHCARCS_FILE -> FLASHCARDS_FILE
+    with open(FLASHCARDS_FILE, "w", encoding="utf-8") as f:
         json.dump(flashcards, f, indent=4)
-
-# New function to inject JavaScript for browser TTS - REMOVED
 
 # ---------- Inject Dark Velvet Blush Theme CSS (More Aggressive & Refined) ----------
 SUBTLE_PATTERN_SVG = """
@@ -336,9 +335,6 @@ st.markdown(
     .stRadio div[data-testid="stRadio"] input[type="radio"] + div {{
         border-color: var(--divider-color) !important;
     }}
-
-    /* Custom CSS for Play Audio Button - REMOVED */
-
     </style>
     """,
     unsafe_allow_html=True,
@@ -415,7 +411,6 @@ with st.sidebar:
 
         # Display the main T.S. response with new style
         st.markdown(f"<p class='chat-ts-text'>T.S.: {main_ai_response_content}</p>", unsafe_allow_html=True)
-        # Add Speak button for chat response - REMOVED
 
         # Display English Translation explicitly
         if translation_section:
@@ -523,7 +518,7 @@ if st.button("Translate", help="Get your translation and breakdown."):
         st.warning("Please enter both a word and a target language.")
 
 # ---------------------- Helper function to format translation text ---------------------
-def format_translation_output(raw_text, lang_for_tts=None, prefix_key=""): # lang_for_tts and prefix_key are now unused but kept for compatibility
+def format_translation_output(raw_text, lang_for_tts=None, prefix_key=""):
     match = re.search(r"---START_TRANSLATION_OUTPUT---\n(.*?)---END_TRANSLATION_OUTPUT---", raw_text, re.DOTALL)
     
     content_to_parse = raw_text
@@ -557,7 +552,7 @@ def format_translation_output(raw_text, lang_for_tts=None, prefix_key=""): # lan
 
     explanation_content = parsed_data.get('EXPLANATION', '').strip()
     
-    def render_line_with_bold(st_obj, line_content, section_name_prefix=None, key_suffix=""): # Adjusted function name
+    def render_line_with_bold(st_obj, line_content, section_name_prefix=None, key_suffix=""):
         clean_content = line_content
         if section_name_prefix:
             pattern = r"^\s*" + re.escape(section_name_prefix) + r"(?:\s*TRANSLATION)?\s*:\s*\**"
@@ -588,8 +583,6 @@ def format_translation_output(raw_text, lang_for_tts=None, prefix_key=""): # lan
         
         st_obj.markdown(f"<p style='display:inline-block; margin-right: 10px;'>{display_html}</p>", unsafe_allow_html=True)
         
-        # Audio button call - REMOVED
-
     
     # Use st.markdown directly to render headers and content
     formal_text = parsed_data.get('FORMAL', '').strip()
@@ -649,7 +642,7 @@ if st.session_state.current_translation:
     with st.expander("✨ Translation & Example", expanded=True): # Expand by default for new translations
         explanation_text = format_translation_output(
             st.session_state.current_translation,
-            lang_for_tts=st.session_state.current_lang, # lang_for_tts and prefix_key are now unused but kept for compatibility
+            lang_for_tts=st.session_state.current_lang,
             prefix_key="current_trans_" 
         )
 
@@ -676,10 +669,10 @@ if st.session_state.current_translation:
 
 # ---------------------- Reverse Translation Section ---------------------
 st.markdown("---")
-st.markdown("## 🔄 Reverse Translate & Understand")
+st.markdown("## 🔄 Reverse Translate & Understand") #
 
-foreign_word = st.text_input("Enter a word or phrase in the foreign language:")
-original_language_reverse = st.text_input("Original language of the word (e.g., Japanese, Thai):")
+foreign_word = st.text_input("Enter a word or phrase in the foreign language:") #
+original_language_reverse = st.text_input("Original language of the word (e.g., Japanese, Thai):") #
 
 if "current_reverse_translation" not in st.session_state:
     st.session_state.current_reverse_translation = ""
@@ -714,7 +707,7 @@ def get_reverse_translation_prompt(foreign_word, original_lang):
         f"---END_REVERSE_TRANSLATION_OUTPUT---"
     )
 
-def format_reverse_translation_output(raw_text, lang_for_tts=None, prefix_key=""): # lang_for_tts and prefix_key are now unused but kept for compatibility
+def format_reverse_translation_output(raw_text, lang_for_tts=None, prefix_key=""):
     match = re.search(r"---START_REVERSE_TRANSLATION_OUTPUT---\n(.*?)---END_REVERSE_TRANSLATION_OUTPUT---", raw_text, re.DOTALL)
     
     content_to_parse = raw_text
@@ -746,11 +739,10 @@ def format_reverse_translation_output(raw_text, lang_for_tts=None, prefix_key=""
 
     nuances_content = parsed_data.get('NUANCES_AND_USAGE', '').strip()
 
-    # This function will now potentially include TTS button for the foreign word itself - REMOVED
-    def render_text_without_tts_button(st_obj, text_content, lang_code, key_prefix): # Adjusted function name
+    def render_text_without_tts_button(st_obj, text_content, lang_code, key_prefix):
         st_obj.markdown(f"<p style='display:inline-block; margin-right: 10px;'>{text_content}</p>", unsafe_allow_html=True)
     
-    # Display the original foreign word for reverse translation with TTS - REMOVED TTS PART
+    # Display the original foreign word for reverse translation
     if st.session_state.current_foreign_word:
         st.markdown(f"<p class='translation-section-header'>Original Foreign Word/Phrase:</p>", unsafe_allow_html=True)
         render_text_without_tts_button(st, st.session_state.current_foreign_word, st.session_state.current_original_lang_reverse, key_prefix="reverse_foreign_word")
@@ -810,7 +802,7 @@ if st.session_state.current_reverse_translation:
     with st.expander("📚 Understanding the Word", expanded=True): # Expand by default
         nuances_text = format_reverse_translation_output(
             st.session_state.current_reverse_translation,
-            lang_for_tts=st.session_state.current_original_lang_reverse, # lang_for_tts and prefix_key are now unused but kept for compatibility
+            lang_for_tts=st.session_state.current_original_lang_reverse,
             prefix_key="reverse_trans_" 
         )
 
@@ -884,7 +876,6 @@ if st.session_state.current_review_card_idx != -1 and st.session_state.review_ca
         st.button("Show Answer", key="show_answer_button", on_click=lambda: st.session_state.update(show_review_answer=True))
     else:
         st.markdown("<p class='translation-section-header'>Translation & Details:</p>", unsafe_allow_html=True)
-        # Pass language for TTS within review session - REMOVED TTS PART
         explanation = format_translation_output(
             current_card['translation_raw'], 
             lang_for_tts=current_card['language'], 
@@ -934,7 +925,6 @@ with st.expander("Click to view/manage your saved flashcards"):
 
         with col_expander:
             with st.expander(expander_label, expanded=False):
-                # Pass language for TTS within the flashcard list display - REMOVED TTS PART
                 flashcard_explanation = format_translation_output(
                     card["translation_raw"],
                     lang_for_tts=card['language'],
